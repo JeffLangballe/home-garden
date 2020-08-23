@@ -37,9 +37,9 @@ float temperature = 0;
 
 // All times in ms
 unsigned long last_water_time = 0;
-unsigned long next_water_time = 10000;
 unsigned long water_duration = 5000;
-unsigned long water_interval = 10000;
+unsigned long water_interval = 70000;
+unsigned long next_water_time = water_interval;
 bool is_watering = false;
 
 DHT dht(dht_pin, DHT11);
@@ -141,7 +141,15 @@ void loop() {
     if (is_watering) {
       lcd.print("WATERING");
     } else {
-      lcd.print("IDLE");
+      // Show time until next water start
+      int delta = (next_water_time - now) / 1000;  // Seconds
+      int seconds = delta % 60;
+      int minutes = delta / 60 % 60;
+      int hours = delta / 3600;
+      char buf[17];
+      sprintf(buf, "%02d:%02d:%02d", hours, minutes, seconds);
+      Serial.println(buf);
+      lcd.print(buf);
     }
     break;
 
