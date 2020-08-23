@@ -154,7 +154,15 @@ void loop() {
     break;
 
   case UI_MANUAL_WATER:
-    lcd.print("<M_WATER>");
+    lcd.print("Water now?");
+
+    // TODO: Confirmation
+    lcd.setCursor(2, 1);
+    lcd.print("Press OK");
+    if (last_pressed == BTN_OK) {
+      next_water_time = now;
+      ui = UI_STATUS;
+    }
     break;
   case UI_MANUAL_HEAT:
     lcd.print("M_HEAT");
