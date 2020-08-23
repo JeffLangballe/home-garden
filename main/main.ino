@@ -35,6 +35,13 @@ button last_pressed = BTN_NONE;
 float humidity = 0;
 float temperature = 0;
 
+// All times in ms
+unsigned long last_water_time = 0;
+unsigned long next_water_time = 10000;
+unsigned long water_duration = 5000;
+unsigned long water_interval = 10000;
+bool is_watering = false;
+
 DHT dht(dht_pin, DHT11);
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -83,11 +90,27 @@ void setup() {
 }
 
 void loop() {
-
+  // Check sensors
   float h = dht.readHumidity();
   float t = dht.readTemperature();  // Celsius
   if (!isnan(h)) humidity = h;
   if (!isnan(t)) temperature = t;
+
+  // Check water
+  unsigned long now = millis();
+  if (now >= next_water_time) {
+    if (now < next_water_time + water_duration) {
+      // Watering
+      Serial.println("Watering...");
+      is_watering = true;
+    } else {
+      // Done watering
+      Serial.println("Done watering...");
+      is_watering = false;
+      last_water_time = next_water_time;
+      next_water_time = last_water_time + water_interval;
+    }
+  }
 
   // Switch screens 
   int next_ui = (int)ui;
@@ -114,6 +137,12 @@ void loop() {
     lcd.print("C ");
     lcd.print(round(h));
     lcd.print("%");
+    lcd.setCursor(2, 1);
+    if (is_watering) {
+      lcd.print("WATERING");
+    } else {
+      lcd.print("IDLE");
+    }
     break;
 
   case UI_MANUAL_WATER:
