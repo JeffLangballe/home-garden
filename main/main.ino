@@ -105,12 +105,15 @@ void loop() {
 
   // Display UI
   lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print("<              >");
+  lcd.setCursor(0,0);
   switch (ui) {
   case UI_STATUS:
     lcd.print(round(t));
     lcd.print("C ");
     lcd.print(round(h));
-    lcd.print("% humidity");
+    lcd.print("%");
     break;
 
   case UI_MANUAL_WATER:
